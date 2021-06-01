@@ -1,0 +1,22 @@
+FROM ubuntu:20.04
+
+RUN set -eux; \
+	apt-get update; \
+	apt-get install -y --no-install-recommends \
+		ca-certificates \
+		iptables \
+		openssl \
+		pigz \
+		xz-utils \
+	; \
+	rm -rf /var/lib/apt/lists/*
+
+ENV DOCKER_TLS_CERTDIR=/certs
+RUN mkdir /certs /certs/client && chmod 1777 /certs /certs/client
+
+COPY --from=docker:20.10.6-dind /usr/local/bin/ /usr/local/bin/
+
+COPY dockerd-entrypoint.sh /
+
+ENTRYPOINT ["dockerd-entrypoint.sh"]
+CMD []
